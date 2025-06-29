@@ -1,24 +1,29 @@
 import requests
 from bs4 import BeautifulSoup
+import feedparser
+from datetime import datetime
+import logging
+import sys
+import os
+import urllib3
 
-def crawl_sciencetimes_news(count=2):
-    url = "https://www.sciencetimes.co.kr/news/category/%ec%9a%b0%ec%a3%bc%eb%b3%91%ea%b3%84"
-    resp = requests.get(url)
-    soup = BeautifulSoup(resp.content, "html.parser")
+# SSL 경고 무시
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-    articles = []
-    for item in soup.select("ul.article-list li")[:count]:
-        title_tag = item.select_one("h4 a")
-        if not title_tag:
-            continue
-        title = title_tag.get_text(strip=True)
-        link = title_tag["href"]
-        summary_tag = item.select_one("p")
-        summary = summary_tag.get_text(strip=True) if summary_tag else ""
+# 상위 디렉토리의 config 모듈 import
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config import SPRING_SERVER_URL, API_KEY, REQUEST_TIMEOUT
+from crawler.korean_news_crawler import crawl_all_korean_content
 
-        articles.append({
-            "title": title,
-            "summary": summary,
-            "url": link
-        })
-    return articles
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# 한국형 통합 크롤링 함수로 교체
+async def crawl_all_content():
+    """한국 뉴스와 천문대 일정 모두 크롤링"""
+    return await crawl_all_korean_content()
+
+# 하위 호환성을 위한 별칭
+async def crawl_all_news():
+    """뉴스 크롤링 (한국형 통합 크롤링으로 리다이렉트)"""
+    return await crawl_all_korean_content()

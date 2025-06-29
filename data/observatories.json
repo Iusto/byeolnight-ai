@@ -1,0 +1,36 @@
+{
+  "observatories": [
+    {
+      "id": "kasi_main",
+      "name": "한국천문연구원 본원",
+      "location": "대전광역시 유성구 대덕대로 776",
+      "category": "KASI",
+      "programs": [
+        {
+          "title": "천문연 견학 프로그램",
+          "description": "천문연구원 시설 견학 및 천문학 강연",
+          "schedule": "매주 토요일 14:00-16:00",
+          "fee": "무료",
+          "contact": "042-865-2195",
+          "registration": "https://www.kasi.re.kr"
+        }
+      ]
+    },
+    {
+      "id": "gwacheon_science",
+      "name": "국립과천과학관",
+      "location": "경기도 과천시 상하벌로 110",
+      "category": "PUBLIC",
+      "programs": [
+        {
+          "title": "천체관측교실",
+          "description": "계절별 별자리 관측 및 천문학 강의",
+          "schedule": "매주 토요일 19:00-21:00",
+          "fee": "성인 3,000원, 청소년 2,000원",
+          "contact": "02-3677-1500",
+          "registration": "https://www.sciencecenter.go.kr"
+        }
+      ]
+    }
+  ]
+}
