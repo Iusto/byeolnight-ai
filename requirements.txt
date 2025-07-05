@@ -2,7 +2,6 @@ fastapi
 uvicorn
 requests
 beautifulsoup4
-feedparser
-apscheduler
 python-dateutil
+apscheduler
 urllib3

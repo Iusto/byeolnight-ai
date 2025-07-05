@@ -4,7 +4,7 @@ import os
 # 스프링 서버 설정
 SPRING_SERVER_URL = "http://localhost:8080"
 API_KEY = "byeolnight-crawler-news"  # 뉴스용 API 키
-EVENT_API_KEY = "byeolnight-crawler-event"  # 이벤트용 API 키 (스프링과 일치)
+EVENT_API_KEY = "byeolnight-crawler-exhibitions"  # 전시회용 API 키
 
 # 크롤링 설정
 MAX_ARTICLES_PER_SOURCE = 3
@@ -16,7 +16,7 @@ DUPLICATE_CHECK_ENABLED = True  # 중복 체크 활성화
 
 # 작성자 ID 설정
 NEWS_AUTHOR_ID = "newsbot"  # 뉴스봇 ID
-OBSERVATORY_AUTHOR_ID = "observatorybot"  # 천문대봇 ID
+EXHIBITION_AUTHOR_ID = "exhibitionbot"  # 전시회봇 ID
 
 # 로깅 설정
 LOG_LEVEL = "INFO"

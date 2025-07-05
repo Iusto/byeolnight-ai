@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from crawler.news_only_crawler import crawl_news_only
-from crawler.observatory_schedule_crawler import crawl_observatory_schedules
+from crawler.exhibition_crawler import crawl_space_exhibitions
 import uvicorn
 import logging
 import requests
@@ -13,38 +13,38 @@ from utils.logger_setup import setup_logger, log_crawling_result, log_crawling_e
 setup_logger()
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="AI 분리형 크롤러", description="뉴스와 천문대 일정 분리 크롤링 시스템")
+app = FastAPI(title="AI 우주 정보 크롤러", description="우주 뉴스와 전시회 정보 크롤링 시스템")
 scheduler = AsyncIOScheduler()
 
 @app.on_event("startup")
 async def startup_event():
     """서버 시작 시 스케줄러 시작"""
-    # 뉴스 크롤링: 하루 2회 (오전 6시, 오후 12시)
+    # 우주 뉴스 크롤링: 하루 2회 (오전 6시, 오후 12시) - 5개 사이트 중 랜덤 선택
     scheduler.add_job(
         crawl_news_only,
         CronTrigger(hour=6, minute=0),
         id="morning_news",
-        name="오전 6시 우주 뉴스 크롤링"
+        name="오전 6시 우주 뉴스 크롤링 (랜덤)"
     )
     scheduler.add_job(
         crawl_news_only,
         CronTrigger(hour=12, minute=0),
         id="noon_news",
-        name="오후 12시 우주 뉴스 크롤링"
+        name="오후 12시 우주 뉴스 크롤링 (랜덤)"
     )
     
-    # 천문대 일정 크롤링: 하루 1회 (오전 7시)
+    # 우주 전시회 크롤링: 하루 1회 (오전 8시)
     scheduler.add_job(
-        crawl_observatory_schedules,
-        CronTrigger(hour=7, minute=0),
-        id="morning_observatory",
-        name="오전 7시 천문대 일정 크롤링"
+        crawl_space_exhibitions,
+        CronTrigger(hour=8, minute=0),
+        id="morning_exhibitions",
+        name="오전 8시 우주 전시회 크롤링"
     )
     
     scheduler.start()
-    logger.info("분리형 크롤링 스케줄러 시작됨")
-    logger.info("  - 뉴스: 매일 06:00, 12:00")
-    logger.info("  - 천문대: 매일 07:00")
+    logger.info("우주 정보 크롤링 스케줄러 시작됨")
+    logger.info("  - 우주 뉴스 (랜덤): 매일 06:00, 12:00")
+    logger.info("  - 우주 전시회: 매일 08:00")
 
 @app.on_event("shutdown")
 async def shutdown_event():
@@ -54,10 +54,11 @@ async def shutdown_event():
 @app.get("/")
 def read_root():
     return {
-        "message": "AI 분리형 크롤러 서버 실행 중", 
-        "news_schedule": ["06:00", "12:00"],
-        "observatory_schedule": ["07:00"],
-        "features": ["우주 뉴스 크롤링 (NEWS)", "천문대 일정 크롤링 (EVENT)"]
+        "message": "AI 우주 정보 크롤러 서버 실행 중", 
+        "news_schedule": ["06:00 (랜덤)", "12:00 (랜덤)"],
+        "exhibition_schedule": ["08:00"],
+        "features": ["우주 뉴스 크롤링 (NEWS) - 5개 사이트 중 랜덤", "우주 전시회 크롤링 (EVENT)"],
+        "news_sources": ["사이언스타임즈", "동아사이언스", "한국천문연구원", "국립과천과학관", "YTN사이언스"]
     }
 
 @app.post("/crawl-news")
@@ -71,16 +72,16 @@ async def manual_news_crawl():
         logger.error(f"수동 뉴스 크롤링 오류: {e}")
         raise HTTPException(status_code=500, detail=f"뉴스 크롤링 오류: {str(e)}")
 
-@app.post("/crawl-observatory")
-async def manual_observatory_crawl():
-    """수동 천문대 일정 크롤링 실행"""
+@app.post("/crawl-exhibitions")
+async def manual_exhibition_crawl():
+    """수동 우주 전시회 크롤링 실행"""
     try:
-        result = await crawl_observatory_schedules()
-        log_crawling_result("observatory", result)
-        return {"message": "천문대 일정 크롤링 완료", "result": result}
+        result = await crawl_space_exhibitions()
+        log_crawling_result("exhibitions", result)
+        return {"message": "우주 전시회 크롤링 완료", "result": result}
     except Exception as e:
-        logger.error(f"수동 천문대 크롤링 오류: {e}")
-        raise HTTPException(status_code=500, detail=f"천문대 크롤링 오류: {str(e)}")
+        logger.error(f"수동 전시회 크롤링 오류: {e}")
+        raise HTTPException(status_code=500, detail=f"전시회 크롤링 오류: {str(e)}")
 
 @app.get("/status")
 def get_status():
