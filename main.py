@@ -19,32 +19,26 @@ scheduler = AsyncIOScheduler()
 @app.on_event("startup")
 async def startup_event():
     """서버 시작 시 스케줄러 시작"""
-    # 우주 뉴스 크롤링: 하루 2회 (오전 6시, 오후 12시) - 5개 사이트 중 랜덤 선택
+    # 우주 뉴스 크롤링: 하루 1회 (오전 8시) - 3개 뉴스 보장
     scheduler.add_job(
         crawl_news_only,
-        CronTrigger(hour=6, minute=0),
-        id="morning_news",
-        name="오전 6시 우주 뉴스 크롤링 (랜덤)"
-    )
-    scheduler.add_job(
-        crawl_news_only,
-        CronTrigger(hour=12, minute=0),
-        id="noon_news",
-        name="오후 12시 우주 뉴스 크롤링 (랜덤)"
+        CronTrigger(hour=8, minute=0),
+        id="daily_news",
+        name="오전 8시 우주 뉴스 크롤링 (3개 보장)"
     )
     
-    # 우주 전시회 크롤링: 하루 1회 (오전 8시)
+    # 우주 전시회 크롤링: 하루 1회 (오전 10시) - 뉴스와 시간 분리
     scheduler.add_job(
         crawl_space_exhibitions,
-        CronTrigger(hour=8, minute=0),
-        id="morning_exhibitions",
-        name="오전 8시 우주 전시회 크롤링"
+        CronTrigger(hour=10, minute=0),
+        id="daily_exhibitions",
+        name="오전 10시 우주 전시회 크롤링"
     )
     
     scheduler.start()
     logger.info("우주 정보 크롤링 스케줄러 시작됨")
-    logger.info("  - 우주 뉴스 (랜덤): 매일 06:00, 12:00")
-    logger.info("  - 우주 전시회: 매일 08:00")
+    logger.info("  - 우주 뉴스 (3개 보장): 매일 08:00")
+    logger.info("  - 우주 전시회: 매일 10:00")
 
 @app.on_event("shutdown")
 async def shutdown_event():
@@ -55,10 +49,10 @@ async def shutdown_event():
 def read_root():
     return {
         "message": "AI 우주 정보 크롤러 서버 실행 중", 
-        "news_schedule": ["06:00 (랜덤)", "12:00 (랜덤)"],
-        "exhibition_schedule": ["08:00"],
-        "features": ["우주 뉴스 크롤링 (NEWS) - 5개 사이트 중 랜덤", "우주 전시회 크롤링 (EVENT)"],
-        "news_sources": ["사이언스타임즈", "동아사이언스", "한국천문연구원", "국립과천과학관", "YTN사이언스"]
+        "news_schedule": ["08:00 (3개 보장)"],
+        "exhibition_schedule": ["10:00"],
+        "features": ["우주 뉴스 크롤링 (NEWS) - 3개 보장", "우주 전시회 크롤링 (EVENT)"],
+        "news_sources": ["구글뉴스RSS", "최신뉴스필터링", "AI요약시스템"]
     }
 
 @app.post("/crawl-news")

@@ -41,7 +41,16 @@ async def crawl_news_only():
         logger.error(f"뉴스 크롤링 실패: {e}")
         selected_site = "실패"
     
-    # 스프링 서버로 전송
+    # DB 기반 중복 체크 및 필터링
+    try:
+        from utils.duplicate_checker import filter_duplicate_articles
+        filtered_articles = filter_duplicate_articles(all_articles)
+        logger.info(f"중복 필터링: {len(all_articles)}개 → {len(filtered_articles)}개")
+        all_articles = filtered_articles
+    except Exception as e:
+        logger.error(f"중복 체크 실패: {e}")
+    
+    # 스프링 서버로 전송 (중복 제거된 기사만)
     success_count = 0
     for article in all_articles:
         if send_news_to_spring(article["title"], article["content"], article["source"]):
